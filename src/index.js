@@ -37,6 +37,10 @@ var PriorityQueue = /** @class */ (function () {
         this.sink();
         return node;
     };
+    PriorityQueue.prototype.heapsort = function () {
+        var _this = this;
+        return Array.from({ length: this.length }, function () { return _this.remove(); });
+    };
     PriorityQueue.prototype.swim = function () {
         var index = this.length - 1;
         while (true) {
@@ -52,17 +56,42 @@ var PriorityQueue = /** @class */ (function () {
         }
     };
     PriorityQueue.prototype.sink = function () {
+        var index = 0;
+        while (true) {
+            var leftChild = this.getLeftChild(index);
+            var rightChild = this.getRightChild(index);
+            var current = index;
+            if (leftChild !== null && this.comparatorFn(this.values[current], this.values[leftChild]) > 0)
+                current = leftChild;
+            if (rightChild !== null && this.comparatorFn(this.values[current], this.values[rightChild]) > 0)
+                current = rightChild;
+            if (current !== index) {
+                var temp = this.values[index];
+                this.values[index] = this.values[current];
+                this.values[current] = temp;
+                index = current;
+                continue;
+            }
+            return;
+        }
     };
     PriorityQueue.prototype.getParentIndex = function (nodeIndex) {
         if (nodeIndex === 0)
             return null;
         return (nodeIndex - 1) >>> 1;
     };
+    PriorityQueue.prototype.getLeftChild = function (nodeIndex) {
+        var leftChild = (nodeIndex * 2) + 1;
+        if (leftChild >= this.length)
+            return null;
+        return leftChild;
+    };
+    PriorityQueue.prototype.getRightChild = function (nodeIndex) {
+        var rightChild = (nodeIndex * 2) + 2;
+        if (rightChild >= this.length)
+            return null;
+        return rightChild;
+    };
     return PriorityQueue;
 }());
 exports.PriorityQueue = PriorityQueue;
-var q = new PriorityQueue({
-    comparatorFn: function (a, b) { return a - b; },
-    intialValues: [32, 5, 44, 10, 1]
-});
-console.log(q.values);

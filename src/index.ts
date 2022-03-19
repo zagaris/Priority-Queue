@@ -54,6 +54,10 @@ export class PriorityQueue<T> {
     return node;
   }
 
+  heapsort() {
+    return Array.from({ length: this.length }, () => this.remove());
+  }
+
   swim(): void {
 
     let index = this.length - 1;
@@ -69,7 +73,6 @@ export class PriorityQueue<T> {
         index = parentIndex;
         continue;
       }
-
       return;
     }
   }
@@ -78,8 +81,25 @@ export class PriorityQueue<T> {
     let index = 0;
 
     while(true) {
-      const left = this.getLeftChild(index);
-      const right = this.getRightChild(index);
+      const leftChild = this.getLeftChild(index);
+      const rightChild = this.getRightChild(index);
+
+      let current = index;
+
+      if(leftChild !== null && this.comparatorFn(this.values[current], this.values[leftChild]) > 0)
+        current = leftChild;
+
+      if(rightChild !== null && this.comparatorFn(this.values[current], this.values[rightChild]) > 0)
+        current = rightChild;
+
+      if (current !== index) {
+        const temp = this.values[index];
+        this.values[index] = this.values[current];
+        this.values[current] = temp;
+        index = current;
+        continue;
+      }
+      return;
     }
   }
 
@@ -104,10 +124,3 @@ export class PriorityQueue<T> {
   }
 
 }
-
-const q = new PriorityQueue({
-  comparatorFn: (a,b) => a - b,
-  intialValues: [32, 5, 44, 10, 1]
-});
-
-console.log(q.values);
